@@ -62,13 +62,33 @@ export default {
             throw new Error('AI模型返回了空数据');
           }
           
-          return new Response(response, {
-            headers: {
-              ...corsHeaders, 
-              'content-type': 'image/png;base64',
-              'cache-control': 'no-cache, no-store, must-revalidate'
-            },
-          });
+          if (model.includes('flux-1-schnell')) {
+            console.log('Processing flux-1-schnell model response');
+            if (response.image) {
+              const binaryString = atob(response.image);
+              const bytes = new Uint8Array(binaryString.length);
+              for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              return new Response(bytes, {
+                headers: {
+                  ...corsHeaders, 
+                  'content-type': 'image/jpeg',
+                  'cache-control': 'no-cache, no-store, must-revalidate'
+                },
+              });
+            } else {
+              throw new Error('flux-1-schnell模型未返回有效的图像数据');
+            }
+          } else {
+            return new Response(response, {
+              headers: {
+                ...corsHeaders, 
+                'content-type': 'image/png',
+                'cache-control': 'no-cache, no-store, must-revalidate'
+              },
+            });
+          }
         } catch (error) {
           console.error(`AI模型运行错误: ${error.message}`);
           return new Response(`生成图像时出错: ${error.message}`, { 
