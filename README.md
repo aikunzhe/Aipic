@@ -28,7 +28,7 @@ stable-diffusion-v1-5-inpainting (图像修复模型)
 
 以下是页面预览，页面还是我特有的风格，十分好看：
 
-<img src="./images/demo.png" style="zoom:80%;" />
+<img src="./images/Demo.png" style="zoom:80%;" />
 
 ## 关于AI模型
 
