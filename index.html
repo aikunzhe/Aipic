@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI图像生成</title>
+    <link rel="icon" href="/logo.png" type="image/png">
     <style>
         body {
             font-family: sans-serif;
@@ -121,6 +122,7 @@
             overflow: hidden;
             position: relative;
             min-height: 256px;
+            max-width: 100%;
         }
         .placeholder {
             width: 100%;
@@ -372,8 +374,8 @@
                 <option value="stable-diffusion-xl-base-1.0" selected>stable-diffusion-xl-base-1.0 (高质量通用模型)</option>
                 <option value="stable-diffusion-xl-lightning">stable-diffusion-xl-lightning (快速生成模型)</option>
                 <option value="flux-1-schnell">flux-1-schnell (Black Forest Labs 12B参数模型)</option>
-                <option value="stable-diffusion-v1-5-img2img">stable-diffusion-v1-5-img2img (图像到图像转换模型)</option>
-                <option value="stable-diffusion-v1-5-inpainting">stable-diffusion-v1-5-inpainting (图像修复模型)</option>
+                <!--<option value="stable-diffusion-v1-5-img2img">stable-diffusion-v1-5-img2img (图像到图像转换模型)</option>
+                <option value="stable-diffusion-v1-5-inpainting">stable-diffusion-v1-5-inpainting (图像修复模型)</option>妈的我搞不懂这鬼玩意怎么附加图片-->
             </select>
 
             <div class="dimension-inputs">

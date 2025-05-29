@@ -1,7 +1,10 @@
 import HTML from './index.html';
+
 export default {
   async fetch(request, env) {
     const originalHost = request.headers.get("host");
+    const url = new URL(request.url);
+    const path = url.pathname;
 
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
@@ -14,6 +17,9 @@ export default {
         status: 204,
         headers: corsHeaders
       });
+    }
+    if (path === '/logo.png') {
+      return env.ASSETS.fetch(request);
     }
     if (request.method === 'POST') {
       const data = await request.json();

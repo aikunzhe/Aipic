@@ -11,3 +11,7 @@ enabled = true
 
 [ai]
 binding = "AI"
+
+[assets]
+directory = "./logo"
+binding = "ASSETS"
