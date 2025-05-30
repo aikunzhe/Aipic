@@ -162,6 +162,21 @@
                 gap: 5px;
             }
         }
+        .prompt-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .prompt-inputs div {
+            width: 100%;
+        }
+        .prompt-inputs label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -176,21 +191,36 @@
             function updateImageContainerSize() {
                 const width = parseInt(widthInput.value) || 512;
                 const height = parseInt(heightInput.value) || 512;
+
                 const validWidth = Math.min(Math.max(width, 256), 2048);
                 const validHeight = Math.min(Math.max(height, 256), 2048);
+
                 widthInput.value = validWidth;
                 heightInput.value = validHeight;
+
                 const aspectRatio = validWidth / validHeight;
                 const containerWidth = imageContainer.parentElement.clientWidth - 40;
-                let displayHeight = Math.min(400, validHeight);
+
+                const maxDisplayHeight = 500;
+
+                let displayHeight = Math.min(maxDisplayHeight, validHeight);
                 let displayWidth = Math.floor(displayHeight * aspectRatio);
+
                 if (displayWidth > containerWidth) {
                     displayWidth = containerWidth;
                     displayHeight = Math.floor(containerWidth / aspectRatio);
                 }
+
                 imageContainer.style.width = displayWidth + 'px';
                 imageContainer.style.height = displayHeight + 'px';
                 imageContainer.style.margin = '20px auto'; // 居中显示
+
+                const placeholder = document.querySelector('.placeholder');
+                if (placeholder) {
+                    placeholder.style.width = '100%';
+                    placeholder.style.height = '100%';
+                }
+
                 if (aiImage.src && aiImage.src !== window.location.href) {
                     aiImage.style.maxWidth = '100%';
                     aiImage.style.maxHeight = '100%';
@@ -204,13 +234,15 @@
             updateImageContainerSize();
 
             const modelParams = {
-                noSizeSupport: ['flux-1-schnell']
+                noSizeSupport: ['flux-1-schnell'],
+                noNegativePromptSupport: ['flux-1-schnell'],
             };
 
             function updateUIBasedOnModel() {
                 const selectedModel = document.getElementById('model').value;
                 const dimensionInputs = document.querySelector('.dimension-inputs');
-                
+                const negativePromptInput = document.getElementById('negative_prompt');
+
                 if (modelParams.noSizeSupport.includes(selectedModel)) {
                     dimensionInputs.style.display = 'none';
                     if (!document.getElementById('size-notice')) {
@@ -227,10 +259,19 @@
                     const notice = document.getElementById('size-notice');
                     if (notice) notice.remove();
                 }
-            }
 
+                if (modelParams.noNegativePromptSupport.includes(selectedModel)) {
+                    negativePromptInput.disabled = true;
+                    negativePromptInput.placeholder = "当前模型不支持避免内容提示词";
+                    negativePromptInput.style.backgroundColor = "#f0f0f0";
+                } else {
+                    negativePromptInput.disabled = false;
+                    negativePromptInput.placeholder = "输入要避免的元素，如：模糊, 变形, 低质量...";
+                    negativePromptInput.style.backgroundColor = "";
+                }
+            }
             document.getElementById('model').addEventListener('change', updateUIBasedOnModel);
-            
+
             updateUIBasedOnModel();
 
             submitButton.addEventListener('click', async function (event) {
@@ -240,6 +281,7 @@
                 statusElement.textContent = '正在处理请求，请稍候...';
                 const model = document.getElementById('model').value;
                 const prompt = document.getElementById('prompt').value;
+                const negativePrompt = document.getElementById('negative_prompt').value;
                 if (prompt === '') {
                     statusElement.textContent = '请输入描述词';
                     submitButton.textContent = '提交';
@@ -262,11 +304,14 @@
                     setTimeout(() => {
                         controller.abort();
                     }, 120000); // 120秒超时，其实免费计划最多30秒
-                    statusElement.textContent = '正在生成图像...'; 
+                    statusElement.textContent = '正在生成图像...';
                     const requestBody = {
                         'model': model,
                         'prompt': prompt
                     };
+                    if (negativePrompt && !modelParams.noSizeSupport.includes(model)) {
+                        requestBody.negative_prompt = negativePrompt;
+                    }
                     if (!modelParams.noSizeSupport.includes(model)) {
                         requestBody.width = parseInt(widthInput.value) || 512;
                         requestBody.height = parseInt(heightInput.value) || 512;
@@ -380,16 +425,29 @@
 
             <div class="dimension-inputs">
                 <div>
-                    <label for="width">宽度 (256-2048px)</label>
+                    <label for="width">宽度 (256~2048px)</label>
                     <input type="number" id="width" min="256" max="2048" value="512" step="64">
                 </div>
                 <div>
-                    <label for="height">高度 (256-2048px)</label>
+                    <label for="height">高度 (256~2048px)</label>
                     <input type="number" id="height" min="256" max="2048" value="512" step="64">
+                </div>
+                <div>
+                    <label for="guidance">指令遵循度 (-15~30)</label>
+                    <input type="number" id="guidance" min="-15" max="30" value="7.5" step="0.5">
                 </div>
             </div>
 
-            <input type="text" id="prompt" placeholder="请输入提示词...">
+            <div class="prompt-inputs">
+                <div>
+                    <label for="prompt">提示词</label>
+                    <input type="text" id="prompt" placeholder="请输入提示词...">
+                </div>
+                <div>
+                    <label for="negative_prompt">避免内容提示词</label>
+                    <input type="text" id="negative_prompt" placeholder="输入要避免的元素，如：模糊, 变形, 低质量...">
+                </div>
+            </div>
 
             <div class="button-container">
                 <button type="button" class="random-btn" id="randomButton">随机提示词</button>

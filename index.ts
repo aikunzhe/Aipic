@@ -50,10 +50,20 @@ export default {
         }
 
         const noSizeSupportModels = ['@cf/black-forest-labs/flux-1-schnell'];
-      
+        const noNegativePromptModels = ['@cf/black-forest-labs/flux-1-schnell'];
+
         const inputs = {
           prompt: data.prompt,
         };
+
+        if (data.negative_prompt && !noNegativePromptModels.includes(model)) {
+          inputs.negative_prompt = data.negative_prompt;
+        }
+        
+        if (!noSizeSupportModels.includes(model)) {
+          if (data.width) inputs.width = parseInt(data.width);
+          if (data.height) inputs.height = parseInt(data.height);
+        }
 
         if (!noSizeSupportModels.includes(model)) {
           if (data.width) inputs.width = parseInt(data.width);
