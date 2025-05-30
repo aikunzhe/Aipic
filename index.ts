@@ -51,6 +51,7 @@ export default {
 
         const noSizeSupportModels = ['@cf/black-forest-labs/flux-1-schnell'];
         const noNegativePromptModels = ['@cf/black-forest-labs/flux-1-schnell'];
+        const noGuidanceSupportModels = ['@cf/black-forest-labs/flux-1-schnell'];
 
         const inputs = {
           prompt: data.prompt,
@@ -65,15 +66,14 @@ export default {
           if (data.height) inputs.height = parseInt(data.height);
         }
 
-        if (!noSizeSupportModels.includes(model)) {
-          if (data.width) inputs.width = parseInt(data.width);
-          if (data.height) inputs.height = parseInt(data.height);
+        if (!noGuidanceSupportModels.includes(model) && data.guidance) {
+          inputs.guidance = parseFloat(data.guidance);
         }
 
         try {
           console.log(`Running model ${model} with inputs:`, inputs);
           const response = await env.AI.run(model, inputs);
-          
+
           if (!response || response.length === 0) {
             throw new Error('AI模型返回了空数据');
           }
