@@ -36,6 +36,10 @@ export default {
           case 'stable-diffusion-xl-lightning':
             model = '@cf/bytedance/stable-diffusion-xl-lightning';
             break;
+          default:
+            break;
+        }
+/*
           case 'flux-1-schnell':
             model = '@cf/black-forest-labs/flux-1-schnell';
             break;
@@ -46,9 +50,9 @@ export default {
             model = '@cf/runwayml/stable-diffusion-v1-5-inpainting';
             break;
           default:
-            break;
-        }
-
+            break; 
+*/
+        
         const noSizeSupportModels = ['@cf/black-forest-labs/flux-1-schnell'];
         const noNegativePromptModels = ['@cf/black-forest-labs/flux-1-schnell'];
         const noGuidanceSupportModels = ['@cf/black-forest-labs/flux-1-schnell'];
